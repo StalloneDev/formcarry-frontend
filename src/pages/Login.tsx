@@ -27,26 +27,31 @@ export const Login = () => {
     const { login } = useAuth();
 
     return (
-        <Box maxW="md" mx="auto" mt={8}>
+        <Box maxW="md" mx="auto" mt={8} px={4}>
             <VStack spacing={8}>
-                <Heading>Login</Heading>
+                <Heading>Connexion</Heading>
                 <Formik
                     initialValues={{ email: '', password: '' }}
                     validationSchema={LoginSchema}
                     onSubmit={async (values, actions) => {
                         try {
                             const response = await auth.login(values);
-                            login(response.data.user, response.data.token);
-                            toast({
-                                title: 'Login Successful',
-                                status: 'success',
-                                duration: 3000,
-                            });
-                            navigate('/');
+                            if (response.data && response.data.user && response.data.token) {
+                                login(response.data.user, response.data.token);
+                                toast({
+                                    title: 'Connexion réussie',
+                                    status: 'success',
+                                    duration: 3000,
+                                });
+                                navigate('/');
+                            } else {
+                                throw new Error('Invalid response format');
+                            }
                         } catch (error: any) {
+                            console.error('Login error:', error);
                             toast({
-                                title: 'Login Failed',
-                                description: error.response?.data?.error || 'An error occurred',
+                                title: 'Échec de la connexion',
+                                description: error.response?.data?.error || 'Une erreur est survenue',
                                 status: 'error',
                                 duration: 3000,
                             });
@@ -69,7 +74,7 @@ export const Login = () => {
                                 <Field name="password">
                                     {({ field, form }: any) => (
                                         <FormControl isInvalid={form.errors.password && form.touched.password}>
-                                            <FormLabel>Password</FormLabel>
+                                            <FormLabel>Mot de passe</FormLabel>
                                             <Input {...field} type="password" />
                                         </FormControl>
                                     )}
@@ -80,16 +85,16 @@ export const Login = () => {
                                     width="100%"
                                     isLoading={props.isSubmitting}
                                 >
-                                    Login
+                                    Se connecter
                                 </Button>
                             </VStack>
                         </Form>
                     )}
                 </Formik>
                 <Text>
-                    Don't have an account?{' '}
+                    Pas encore de compte ?{' '}
                     <Link as={RouterLink} to="/register" color="blue.500">
-                        Register here
+                        Inscrivez-vous ici
                     </Link>
                 </Text>
             </VStack>
