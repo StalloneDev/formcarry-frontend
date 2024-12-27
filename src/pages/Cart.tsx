@@ -33,37 +33,25 @@ export const Cart = () => {
     const bgColor = useColorModeValue('white', 'gray.800');
     const borderColor = useColorModeValue('gray.200', 'gray.700');
 
-    const handlePaymentSuccess = async (response: any) => {
+    const handlePaymentCallback = async (response: any) => {
         try {
-            // Créer la commande
-            await orders.create({
-                items: items.map(item => ({
-                    productId: item.product.id,
-                    quantity: item.quantity
-                })),
-                transactionId: response.transactionId
-            });
-
-            // Vider le panier
+            // Traitement de la réponse du paiement
+            console.log('Payment response:', response);
+            // Vider le panier après le paiement réussi
             clearCart();
-
-            // Afficher un message de succès
             toast({
-                title: 'Order Successful',
-                description: 'Your order has been placed successfully!',
+                title: 'Payment successful',
                 status: 'success',
-                duration: 5000,
+                duration: 3000,
+                isClosable: true,
             });
-
-            // Rediriger vers la page d'accueil
-            navigate('/');
         } catch (error) {
-            console.error('Error creating order:', error);
+            console.error('Payment error:', error);
             toast({
-                title: 'Error',
-                description: 'There was an error processing your order. Please try again.',
+                title: 'Payment failed',
                 status: 'error',
-                duration: 5000,
+                duration: 3000,
+                isClosable: true,
             });
         }
     };
@@ -194,9 +182,12 @@ export const Cart = () => {
                             </Text>
                         </HStack>
                         <KKiapayCheckout
-                            amount={total}
-                            callback={handlePaymentSuccess}
-                        />
+                            amount={total.toString()}
+                            key="YOUR_PUBLIC_API_KEY"
+                            callback={handlePaymentCallback}
+                        >
+                            Proceed to Checkout
+                        </KKiapayCheckout>
                     </VStack>
                 </Box>
             </VStack>

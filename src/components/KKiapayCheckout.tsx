@@ -1,51 +1,60 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box } from '@chakra-ui/react';
-
-declare global {
-    interface Window {
-        KKIAPAY_INSTANCE: any;
-    }
-}
+import { CSSProperties } from 'react';
 
 interface KKiapayCheckoutProps {
-    amount: number;
-    callback: (response: any) => void;
-    vendorId: string;
+  amount: string;
+  key: string;
+  callback: (response: any) => void;
+  style?: CSSProperties;
+  children?: React.ReactNode;
 }
 
-export const KKiapayCheckout: React.FC<KKiapayCheckoutProps> = ({ amount, callback, vendorId }) => {
-    useEffect(() => {
-        // Charger le script KKiaPay
-        const script = document.createElement('script');
-        script.src = 'https://cdn.kkiapay.me/k.js';
-        script.async = true;
-        document.body.appendChild(script);
+declare global {
+  interface Window {
+    KKiapayWidget: any;
+  }
+}
 
-        return () => {
-            // Ne pas supprimer le script pour éviter les problèmes de rechargement
-        };
-    }, []);
+export const KKiapayCheckout: React.FC<KKiapayCheckoutProps> = ({
+  amount,
+  key,
+  callback,
+  style,
+  children,
+}) => {
+  const defaultStyle: CSSProperties = {
+    backgroundColor: "#4299E1",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    cursor: "pointer",
+    width: "100%",
+    textAlign: "center",
+    fontSize: "16px",
+    fontWeight: "bold",
+    ...style
+  };
 
-    return (
-        <Box width="full">
-            <kkiapay-widget
-                amount={amount.toString()}
-                key={vendorId}
-                callback="https://kkiapay-redirect.com"
-                style={{
-                    backgroundColor: '#4299E1',
-                    color: 'white',
-                    padding: '1rem',
-                    borderRadius: '0.5rem',
-                    cursor: 'pointer',
-                    width: '100%',
-                    textAlign: 'center',
-                    fontSize: '1.125rem',
-                    fontWeight: 'bold',
-                }}
-            >
-                Proceed to Checkout
-            </kkiapay-widget>
-        </Box>
-    );
+  const handleClick = () => {
+    if (window.KKiapayWidget) {
+      window.KKiapayWidget.init({
+        amount: amount,
+        key: key,
+        callback: callback,
+        position: "center",
+        sandbox: "true",
+        data: "",
+        theme: "light"
+      });
+    }
+  };
+
+  return (
+    <Box width="full">
+      <button onClick={handleClick} style={defaultStyle}>
+        {children}
+      </button>
+    </Box>
+  );
 };
