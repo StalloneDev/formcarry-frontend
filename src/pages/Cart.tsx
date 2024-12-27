@@ -41,47 +41,54 @@ export const Cart = () => {
     };
 
     return (
-        <Container maxW={'7xl'} px={{ base: 4, md: 8 }} py={{ base: 8, md: 12 }}>
-            <Heading mb={8} fontSize={{ base: '2xl', md: '3xl' }}>
+        <Box w="full" px={{ base: 2, md: 8 }} py={{ base: 4, md: 12 }}>
+            <Heading 
+                mb={{ base: 4, md: 8 }} 
+                fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
+                px={{ base: 2, md: 0 }}
+            >
                 Mon Panier
             </Heading>
 
             {cart.length === 0 ? (
-                <VStack spacing={4} align="center" py={10}>
-                    <Text fontSize={{ base: 'lg', md: 'xl' }}>Votre panier est vide</Text>
+                <VStack spacing={6} align="center" py={{ base: 8, md: 12 }}>
+                    <Text fontSize={{ base: 'md', md: 'lg' }} textAlign="center">
+                        Votre panier est vide
+                    </Text>
                     <Button
                         as={Link}
                         to="/products"
                         colorScheme="blue"
                         size={{ base: 'md', md: 'lg' }}
+                        w={{ base: 'full', sm: 'auto' }}
                     >
-                        Continuer vos achats
+                        Voir nos produits
                     </Button>
                 </VStack>
             ) : (
                 <Stack
                     direction={{ base: 'column', lg: 'row' }}
-                    spacing={{ base: 8, lg: 12 }}
-                    align={{ lg: 'flex-start' }}
+                    spacing={{ base: 4, md: 6, lg: 8 }}
+                    align="flex-start"
                 >
-                    <VStack flex="2" spacing={6} align="stretch">
+                    <VStack flex="1" spacing={{ base: 3, md: 4 }} align="stretch">
                         {cart.map((item) => (
                             <Box
                                 key={item.id}
                                 borderWidth="1px"
                                 borderRadius="lg"
-                                p={{ base: 4, md: 6 }}
+                                p={{ base: 3, md: 4 }}
                                 bg={useColorModeValue('white', 'gray.800')}
                             >
                                 <Stack
                                     direction={{ base: 'column', sm: 'row' }}
-                                    spacing={{ base: 4, sm: 6 }}
-                                    align={{ sm: 'center' }}
+                                    spacing={{ base: 3, sm: 4 }}
+                                    align="stretch"
                                 >
                                     <Box
-                                        width={{ base: '100%', sm: '120px' }}
-                                        height={{ base: '200px', sm: '120px' }}
-                                        position="relative"
+                                        width={{ base: '100%', sm: '100px' }}
+                                        height={{ base: '160px', sm: '100px' }}
+                                        flexShrink={0}
                                     >
                                         <Image
                                             src={item.image}
@@ -95,22 +102,22 @@ export const Cart = () => {
 
                                     <Stack
                                         flex="1"
-                                        spacing={4}
-                                        direction={{ base: 'column', sm: 'row' }}
+                                        spacing={{ base: 2, sm: 3 }}
                                         justify="space-between"
-                                        align={{ base: 'stretch', sm: 'center' }}
                                     >
-                                        <Box flex="1">
+                                        <Box>
                                             <Text
-                                                fontSize={{ base: 'md', md: 'lg' }}
+                                                fontSize={{ base: 'sm', md: 'md' }}
                                                 fontWeight="semibold"
+                                                noOfLines={2}
                                             >
                                                 {item.name}
                                             </Text>
                                             <Text
-                                                fontSize={{ base: 'md', md: 'lg' }}
+                                                fontSize={{ base: 'sm', md: 'md' }}
                                                 color="blue.600"
                                                 fontWeight="semibold"
+                                                mt={1}
                                             >
                                                 {item.price.toLocaleString('fr-FR', {
                                                     style: 'currency',
@@ -119,53 +126,46 @@ export const Cart = () => {
                                             </Text>
                                         </Box>
 
-                                        <Stack
-                                            direction={{ base: 'row', sm: 'column' }}
-                                            spacing={4}
-                                            align={{ base: 'center', sm: 'flex-end' }}
+                                        <HStack 
+                                            spacing={2} 
+                                            justify={{ base: 'space-between', sm: 'flex-start' }}
+                                            align="center"
                                         >
-                                            <HStack>
+                                            <HStack spacing={1}>
                                                 <IconButton
-                                                    aria-label="Decrease quantity"
+                                                    aria-label="Diminuer la quantité"
                                                     icon={<MinusIcon />}
                                                     size="sm"
-                                                    onClick={() =>
-                                                        handleQuantityChange(
-                                                            item.id,
-                                                            item.quantity - 1
-                                                        )
-                                                    }
+                                                    variant="ghost"
+                                                    onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                                                     isDisabled={item.quantity <= 1}
                                                 />
                                                 <Text
-                                                    fontSize={{ base: 'md', md: 'lg' }}
-                                                    fontWeight="semibold"
-                                                    minW="40px"
+                                                    fontSize={{ base: 'sm', md: 'md' }}
+                                                    fontWeight="medium"
+                                                    minW="32px"
                                                     textAlign="center"
                                                 >
                                                     {item.quantity}
                                                 </Text>
                                                 <IconButton
-                                                    aria-label="Increase quantity"
+                                                    aria-label="Augmenter la quantité"
                                                     icon={<AddIcon />}
                                                     size="sm"
-                                                    onClick={() =>
-                                                        handleQuantityChange(
-                                                            item.id,
-                                                            item.quantity + 1
-                                                        )
-                                                    }
+                                                    variant="ghost"
+                                                    onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                                                 />
                                             </HStack>
+                                            
                                             <IconButton
-                                                aria-label="Remove item"
+                                                aria-label="Supprimer l'article"
                                                 icon={<DeleteIcon />}
                                                 size="sm"
                                                 colorScheme="red"
                                                 variant="ghost"
                                                 onClick={() => removeFromCart(item.id)}
                                             />
-                                        </Stack>
+                                        </HStack>
                                     </Stack>
                                 </Stack>
                             </Box>
@@ -173,20 +173,20 @@ export const Cart = () => {
                     </VStack>
 
                     <Box
-                        flex="1"
+                        w={{ base: 'full', lg: '320px' }}
+                        position={{ base: 'relative', lg: 'sticky' }}
+                        top={{ lg: '24px' }}
                         borderWidth="1px"
                         borderRadius="lg"
-                        p={6}
-                        position="sticky"
-                        top="24px"
+                        p={{ base: 4, md: 6 }}
                         bg={useColorModeValue('white', 'gray.800')}
                     >
                         <VStack spacing={4} align="stretch">
                             <Heading size="md">Résumé de la commande</Heading>
-                            <Flex justify="space-between">
-                                <Text fontSize={{ base: 'md', md: 'lg' }}>Total</Text>
-                                <Text
-                                    fontSize={{ base: 'md', md: 'lg' }}
+                            <HStack justify="space-between">
+                                <Text fontSize={{ base: 'sm', md: 'md' }}>Total</Text>
+                                <Text 
+                                    fontSize={{ base: 'md', md: 'lg' }} 
                                     fontWeight="bold"
                                     color="blue.600"
                                 >
@@ -195,10 +195,11 @@ export const Cart = () => {
                                         currency: 'XOF',
                                     })}
                                 </Text>
-                            </Flex>
+                            </HStack>
                             <Button
                                 colorScheme="blue"
-                                size="lg"
+                                size={{ base: 'md', md: 'lg' }}
+                                w="full"
                                 onClick={() => setIsPaymentOpen(true)}
                             >
                                 Payer maintenant
@@ -214,6 +215,6 @@ export const Cart = () => {
                 isOpen={isPaymentOpen}
                 onClose={() => setIsPaymentOpen(false)}
             />
-        </Container>
+        </Box>
     );
 };

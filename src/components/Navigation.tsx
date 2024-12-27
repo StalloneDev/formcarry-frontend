@@ -27,7 +27,6 @@ import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 import { HStack } from '@chakra-ui/react'
 
-
 export const Navigation = () => {
     const { isOpen, onToggle } = useDisclosure();
     const { isAuthenticated, user, logout } = useAuth();
@@ -46,132 +45,81 @@ export const Navigation = () => {
                 borderStyle={'solid'}
                 borderColor={useColorModeValue('gray.200', 'gray.900')}
                 align={'center'}
+                justify="space-between"
             >
-                <Flex
-                    flex={{ base: 1, md: 'auto' }}
-                    ml={{ base: -2 }}
+                {/* Menu Hamburger pour mobile */}
+                <IconButton
                     display={{ base: 'flex', md: 'none' }}
+                    onClick={onToggle}
+                    icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
+                    variant={'ghost'}
+                    aria-label={'Toggle Navigation'}
+                    size="md"
+                />
+
+                {/* Logo */}
+                <Text
+                    as={RouterLink}
+                    to="/"
+                    fontFamily={'heading'}
+                    color={useColorModeValue('gray.800', 'white')}
+                    fontSize={{ base: "lg", md: "xl" }}
+                    fontWeight="bold"
                 >
+                    KJS-Shop
+                </Text>
+
+                {/* Navigation Desktop */}
+                <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
+                    <Stack direction={'row'} spacing={4}>
+                        <RouterLink to="/products">
+                            <Text px={2} py={1} rounded={'md'} _hover={{ bg: useColorModeValue('gray.100', 'gray.700') }}>
+                                Produits
+                            </Text>
+                        </RouterLink>
+                    </Stack>
+                </Flex>
+
+                {/* Actions (Panier & Profil) */}
+                <HStack spacing={{ base: 2, md: 4 }}>
                     <IconButton
-                        onClick={onToggle}
-                        icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
-                        variant={'ghost'}
-                        aria-label={'Toggle Navigation'}
-                    />
-                </Flex>
-                <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-                    <Text
-                        as={RouterLink}
-                        to="/"
-                        textAlign={{ base: 'center', md: 'left' }}
-                        fontFamily={'heading'}
-                        color={useColorModeValue('gray.800', 'white')}
-                        fontSize="xl"
-                        fontWeight="bold"
-                    >
-                        KJS-Shop
-                    </Text>
-
-                    <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-                        <Stack direction={'row'} spacing={4}>
-                            <Box>
-                                <Popover trigger={'hover'} placement={'bottom-start'}>
-                                    <PopoverTrigger>
-                                        <Link
-                                            p={2}
-                                            href={'#'}
-                                            fontSize={'sm'}
-                                            fontWeight={500}
-                                            color={useColorModeValue('gray.600', 'gray.200')}
-                                            _hover={{
-                                                textDecoration: 'none',
-                                                color: useColorModeValue('gray.800', 'white'),
-                                            }}
-                                        >
-                                            Catégories
-                                            <Icon as={ChevronDownIcon} />
-                                        </Link>
-                                    </PopoverTrigger>
-                                    <PopoverContent
-                                        border={0}
-                                        boxShadow={'xl'}
-                                        bg={useColorModeValue('white', 'gray.800')}
-                                        p={4}
-                                        rounded={'xl'}
-                                        minW={'sm'}
-                                    >
-                                        <Stack>
-                                            <Box
-                                                as={RouterLink}
-                                                to="/products"
-                                                role={'group'}
-                                                p={2}
-                                                rounded={'md'}
-                                                _hover={{ bg: useColorModeValue('brand.50', 'gray.900') }}
-                                            >
-                                                <Stack direction={'row'} align={'center'}>
-                                                    <Box>
-                                                        <Text
-                                                            transition={'all .3s ease'}
-                                                            _groupHover={{ color: 'brand.500' }}
-                                                            fontWeight={500}
-                                                        >
-                                                            Tous les produits
-                                                        </Text>
-                                                    </Box>
-                                                </Stack>
-                                            </Box>
-                                        </Stack>
-                                    </PopoverContent>
-                                </Popover>
-                            </Box>
-                        </Stack>
-                    </Flex>
-                </Flex>
-
-                <Stack
-                    flex={{ base: 1, md: 0 }}
-                    justify={'flex-end'}
-                    direction={'row'}
-                    spacing={6}
-                    align="center"
-                >
-                    <Button
                         as={RouterLink}
                         to="/cart"
                         variant="ghost"
-                        size="sm"
-                        leftIcon={<FaShoppingCart />}
-                        position="relative"
-                    >
-                        Panier
-                        {items.length > 0 && (
-                            <Badge
-                                colorScheme="brand"
-                                position="absolute"
-                                top="-1"
-                                right="-1"
-                                borderRadius="full"
-                            >
-                                {items.length}
-                            </Badge>
-                        )}
-                    </Button>
+                        size="md"
+                        icon={
+                            <Box position="relative">
+                                <FaShoppingCart />
+                                {items.length > 0 && (
+                                    <Badge
+                                        colorScheme="brand"
+                                        position="absolute"
+                                        top="-2"
+                                        right="-2"
+                                        fontSize="xs"
+                                        borderRadius="full"
+                                    >
+                                        {items.length}
+                                    </Badge>
+                                )}
+                            </Box>
+                        }
+                        aria-label="Panier"
+                    />
 
                     {isAuthenticated ? (
                         <Menu>
                             <MenuButton
-                                as={Button}
-                                rounded={'full'}
-                                cursor={'pointer'}
-                                minW={0}
-                            >
-                                <HStack spacing={1}>
-                                    <Icon as={FaUser} />
-                                    <Text>{user?.name}</Text>
-                                </HStack>
-                            </MenuButton>
+                                as={IconButton}
+                                icon={<FaUser />}
+                                variant="ghost"
+                                size="md"
+                                aria-label="Menu utilisateur"
+                            />
                             <MenuList>
+                                <Text px={3} py={2} fontWeight="medium" color="gray.500">
+                                    {user?.name}
+                                </Text>
                                 {user?.role === 'VENDOR' && (
                                     <MenuItem
                                         as={RouterLink}
@@ -190,34 +138,69 @@ export const Navigation = () => {
                             </MenuList>
                         </Menu>
                     ) : (
-                        <HStack spacing={4}>
+                        <HStack spacing={2}>
                             <Button
                                 as={RouterLink}
                                 to="/login"
-                                fontSize={'sm'}
-                                fontWeight={400}
-                                variant={'link'}
+                                variant="ghost"
+                                size={{ base: "sm", md: "md" }}
                             >
-                                Se connecter
+                                Connexion
                             </Button>
                             <Button
                                 as={RouterLink}
                                 to="/register"
+                                colorScheme="brand"
+                                size={{ base: "sm", md: "md" }}
                                 display={{ base: 'none', md: 'inline-flex' }}
-                                fontSize={'sm'}
-                                fontWeight={600}
-                                color={'white'}
-                                bg={'brand.500'}
-                                _hover={{
-                                    bg: 'brand.400',
-                                }}
                             >
-                                S'inscrire
+                                Inscription
                             </Button>
                         </HStack>
                     )}
-                </Stack>
+                </HStack>
             </Flex>
+
+            {/* Menu Mobile */}
+            <Collapse in={isOpen} animateOpacity>
+                <Box
+                    p={4}
+                    display={{ md: 'none' }}
+                    bg={useColorModeValue('white', 'gray.800')}
+                    shadow="md"
+                >
+                    <Stack spacing={4}>
+                        <Box
+                            as={RouterLink}
+                            to="/products"
+                            py={2}
+                            px={4}
+                            rounded="md"
+                            _hover={{
+                                bg: useColorModeValue('gray.100', 'gray.700'),
+                            }}
+                        >
+                            Produits
+                        </Box>
+                        {!isAuthenticated && (
+                            <Box
+                                as={RouterLink}
+                                to="/register"
+                                py={2}
+                                px={4}
+                                rounded="md"
+                                bg="brand.500"
+                                color="white"
+                                _hover={{
+                                    bg: 'brand.600',
+                                }}
+                            >
+                                Inscription
+                            </Box>
+                        )}
+                    </Stack>
+                </Box>
+            </Collapse>
         </Box>
     );
 };
