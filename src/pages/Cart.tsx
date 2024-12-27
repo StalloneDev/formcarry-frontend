@@ -71,41 +71,41 @@ export const Cart = () => {
                     spacing={{ base: 4, md: 6, lg: 8 }}
                     align="flex-start"
                 >
-                    <VStack flex="1" spacing={{ base: 3, md: 4 }} align="stretch">
+                    {/* Liste des produits */}
+                    <VStack flex="1" spacing={{ base: 3, md: 4 }} align="stretch" w="full">
                         {cart.map((item) => (
                             <Box
                                 key={item.id}
                                 borderWidth="1px"
                                 borderRadius="lg"
-                                p={{ base: 3, md: 4 }}
+                                overflow="hidden"
                                 bg={useColorModeValue('white', 'gray.800')}
                             >
                                 <Stack
                                     direction={{ base: 'column', sm: 'row' }}
-                                    spacing={{ base: 3, sm: 4 }}
-                                    align="stretch"
+                                    spacing={0}
                                 >
+                                    {/* Image du produit */}
                                     <Box
-                                        width={{ base: '100%', sm: '100px' }}
-                                        height={{ base: '160px', sm: '100px' }}
-                                        flexShrink={0}
+                                        w={{ base: '100%', sm: '120px' }}
+                                        h={{ base: '120px', sm: '120px' }}
                                     >
                                         <Image
                                             src={item.image}
                                             alt={item.name}
                                             objectFit="cover"
-                                            width="100%"
-                                            height="100%"
-                                            borderRadius="md"
+                                            w="100%"
+                                            h="100%"
                                         />
                                     </Box>
 
+                                    {/* Détails du produit */}
                                     <Stack
                                         flex="1"
-                                        spacing={{ base: 2, sm: 3 }}
-                                        justify="space-between"
+                                        p={{ base: 3, sm: 4 }}
+                                        spacing={3}
                                     >
-                                        <Box>
+                                        <Stack spacing={1}>
                                             <Text
                                                 fontSize={{ base: 'sm', md: 'md' }}
                                                 fontWeight="semibold"
@@ -117,33 +117,34 @@ export const Cart = () => {
                                                 fontSize={{ base: 'sm', md: 'md' }}
                                                 color="blue.600"
                                                 fontWeight="semibold"
-                                                mt={1}
                                             >
                                                 {item.price.toLocaleString('fr-FR', {
                                                     style: 'currency',
                                                     currency: 'XOF',
                                                 })}
                                             </Text>
-                                        </Box>
+                                        </Stack>
 
-                                        <HStack 
-                                            spacing={2} 
-                                            justify={{ base: 'space-between', sm: 'flex-start' }}
+                                        {/* Contrôles de quantité */}
+                                        <Flex 
+                                            justify="space-between" 
                                             align="center"
+                                            wrap="wrap"
+                                            gap={2}
                                         >
-                                            <HStack spacing={1}>
+                                            <HStack spacing={2}>
                                                 <IconButton
                                                     aria-label="Diminuer la quantité"
                                                     icon={<MinusIcon />}
                                                     size="sm"
-                                                    variant="ghost"
+                                                    variant="outline"
                                                     onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                                                     isDisabled={item.quantity <= 1}
                                                 />
                                                 <Text
-                                                    fontSize={{ base: 'sm', md: 'md' }}
+                                                    fontSize="sm"
                                                     fontWeight="medium"
-                                                    minW="32px"
+                                                    minW="2rem"
                                                     textAlign="center"
                                                 >
                                                     {item.quantity}
@@ -152,11 +153,10 @@ export const Cart = () => {
                                                     aria-label="Augmenter la quantité"
                                                     icon={<AddIcon />}
                                                     size="sm"
-                                                    variant="ghost"
+                                                    variant="outline"
                                                     onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                                                 />
                                             </HStack>
-                                            
                                             <IconButton
                                                 aria-label="Supprimer l'article"
                                                 icon={<DeleteIcon />}
@@ -165,13 +165,14 @@ export const Cart = () => {
                                                 variant="ghost"
                                                 onClick={() => removeFromCart(item.id)}
                                             />
-                                        </HStack>
+                                        </Flex>
                                     </Stack>
                                 </Stack>
                             </Box>
                         ))}
                     </VStack>
 
+                    {/* Résumé de la commande */}
                     <Box
                         w={{ base: 'full', lg: '320px' }}
                         position={{ base: 'relative', lg: 'sticky' }}
@@ -182,11 +183,13 @@ export const Cart = () => {
                         bg={useColorModeValue('white', 'gray.800')}
                     >
                         <VStack spacing={4} align="stretch">
-                            <Heading size="md">Résumé de la commande</Heading>
-                            <HStack justify="space-between">
-                                <Text fontSize={{ base: 'sm', md: 'md' }}>Total</Text>
+                            <Text fontSize="lg" fontWeight="semibold">
+                                Résumé de la commande
+                            </Text>
+                            <Flex justify="space-between" align="center">
+                                <Text fontSize="md">Total</Text>
                                 <Text 
-                                    fontSize={{ base: 'md', md: 'lg' }} 
+                                    fontSize="lg" 
                                     fontWeight="bold"
                                     color="blue.600"
                                 >
@@ -195,10 +198,10 @@ export const Cart = () => {
                                         currency: 'XOF',
                                     })}
                                 </Text>
-                            </HStack>
+                            </Flex>
                             <Button
                                 colorScheme="blue"
-                                size={{ base: 'md', md: 'lg' }}
+                                size="lg"
                                 w="full"
                                 onClick={() => setIsPaymentOpen(true)}
                             >

@@ -18,6 +18,7 @@ import {
     MenuList,
     MenuItem,
     Badge,
+    VStack
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -34,7 +35,7 @@ export const Navigation = () => {
     const navigate = useNavigate();
 
     return (
-        <Box>
+        <Box position="relative">
             <Flex
                 bg={useColorModeValue('white', 'gray.800')}
                 color={useColorModeValue('gray.600', 'white')}
@@ -70,15 +71,24 @@ export const Navigation = () => {
                 </Text>
 
                 {/* Navigation Desktop */}
-                <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-                    <Stack direction={'row'} spacing={4}>
-                        <RouterLink to="/products">
-                            <Text px={2} py={1} rounded={'md'} _hover={{ bg: useColorModeValue('gray.100', 'gray.700') }}>
-                                Produits
-                            </Text>
-                        </RouterLink>
-                    </Stack>
-                </Flex>
+                <Stack
+                    direction={'row'}
+                    spacing={4}
+                    display={{ base: 'none', md: 'flex' }}
+                >
+                    <Box
+                        as={RouterLink}
+                        to="/products"
+                        px={3}
+                        py={2}
+                        rounded={'md'}
+                        _hover={{
+                            bg: useColorModeValue('gray.100', 'gray.700')
+                        }}
+                    >
+                        Produits
+                    </Box>
+                </Stack>
 
                 {/* Actions (Panier & Profil) */}
                 <HStack spacing={{ base: 2, md: 4 }}>
@@ -92,12 +102,13 @@ export const Navigation = () => {
                                 <FaShoppingCart />
                                 {items.length > 0 && (
                                     <Badge
-                                        colorScheme="brand"
+                                        colorScheme="blue"
                                         position="absolute"
                                         top="-2"
                                         right="-2"
                                         fontSize="xs"
                                         borderRadius="full"
+                                        minW="1.5em"
                                     >
                                         {items.length}
                                     </Badge>
@@ -116,7 +127,7 @@ export const Navigation = () => {
                                 size="md"
                                 aria-label="Menu utilisateur"
                             />
-                            <MenuList>
+                            <MenuList zIndex={2}>
                                 <Text px={3} py={2} fontWeight="medium" color="gray.500">
                                     {user?.name}
                                 </Text>
@@ -144,13 +155,14 @@ export const Navigation = () => {
                                 to="/login"
                                 variant="ghost"
                                 size={{ base: "sm", md: "md" }}
+                                display={{ base: 'none', md: 'inline-flex' }}
                             >
                                 Connexion
                             </Button>
                             <Button
                                 as={RouterLink}
                                 to="/register"
-                                colorScheme="brand"
+                                colorScheme="blue"
                                 size={{ base: "sm", md: "md" }}
                                 display={{ base: 'none', md: 'inline-flex' }}
                             >
@@ -164,41 +176,59 @@ export const Navigation = () => {
             {/* Menu Mobile */}
             <Collapse in={isOpen} animateOpacity>
                 <Box
-                    p={4}
-                    display={{ md: 'none' }}
+                    position="absolute"
+                    w="100%"
+                    zIndex={10}
                     bg={useColorModeValue('white', 'gray.800')}
-                    shadow="md"
+                    shadow="lg"
+                    px={4}
+                    py={4}
+                    display={{ md: 'none' }}
                 >
-                    <Stack spacing={4}>
+                    <VStack spacing={3} align="stretch">
                         <Box
                             as={RouterLink}
                             to="/products"
+                            px={3}
                             py={2}
-                            px={4}
                             rounded="md"
                             _hover={{
-                                bg: useColorModeValue('gray.100', 'gray.700'),
+                                bg: useColorModeValue('gray.100', 'gray.700')
                             }}
                         >
                             Produits
                         </Box>
                         {!isAuthenticated && (
-                            <Box
-                                as={RouterLink}
-                                to="/register"
-                                py={2}
-                                px={4}
-                                rounded="md"
-                                bg="brand.500"
-                                color="white"
-                                _hover={{
-                                    bg: 'brand.600',
-                                }}
-                            >
-                                Inscription
-                            </Box>
+                            <>
+                                <Box
+                                    as={RouterLink}
+                                    to="/login"
+                                    px={3}
+                                    py={2}
+                                    rounded="md"
+                                    _hover={{
+                                        bg: useColorModeValue('gray.100', 'gray.700')
+                                    }}
+                                >
+                                    Connexion
+                                </Box>
+                                <Box
+                                    as={RouterLink}
+                                    to="/register"
+                                    px={3}
+                                    py={2}
+                                    rounded="md"
+                                    bg="blue.500"
+                                    color="white"
+                                    _hover={{
+                                        bg: 'blue.600'
+                                    }}
+                                >
+                                    Inscription
+                                </Box>
+                            </>
                         )}
-                    </Stack>
+                    </VStack>
                 </Box>
             </Collapse>
         </Box>
