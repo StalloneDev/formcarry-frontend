@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Container,
@@ -17,8 +17,12 @@ import {
     Th,
     Td,
     useToast,
+    Stack,
+    Flex,
+    MinusIcon,
+    AddIcon,
+    DeleteIcon,
 } from '@chakra-ui/react';
-import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { KKiapayCheckout } from '../components/KKiapayCheckout';
@@ -26,171 +30,190 @@ import { useAuth } from '../context/AuthContext';
 import { orders } from '../services/api';
 
 export const Cart = () => {
-    const { items, updateQuantity, removeItem, total, clearCart } = useCart();
-    const { user } = useAuth();
-    const navigate = useNavigate();
-    const toast = useToast();
-    const bgColor = useColorModeValue('white', 'gray.800');
-    const borderColor = useColorModeValue('gray.200', 'gray.700');
+    const { cart, removeFromCart, updateQuantity } = useCart();
+    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    const handlePaymentCallback = async (response: any) => {
-        try {
-            // Traitement de la réponse du paiement
-            console.log('Payment response:', response);
-            // Vider le panier après le paiement réussi
-            clearCart();
-            toast({
-                title: 'Payment successful',
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-            });
-        } catch (error) {
-            console.error('Payment error:', error);
-            toast({
-                title: 'Payment failed',
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            });
+    const handleQuantityChange = (productId: string, newQuantity: number) => {
+        if (newQuantity >= 1) {
+            updateQuantity(productId, newQuantity);
         }
     };
 
-    if (items.length === 0) {
-        return (
-            <Container maxW="7xl" py={20}>
-                <VStack spacing={8} align="center">
-                    <Heading size="xl">Votre panier est vide</Heading>
-                    <Text color="gray.500">Ajoutez quelques produits à votre panier pour commencer !</Text>
+    return (
+        <Container maxW={'7xl'} px={{ base: 4, md: 8 }} py={{ base: 8, md: 12 }}>
+            <Heading mb={8} fontSize={{ base: '2xl', md: '3xl' }}>
+                Mon Panier
+            </Heading>
+
+            {cart.length === 0 ? (
+                <VStack spacing={4} align="center" py={10}>
+                    <Text fontSize={{ base: 'lg', md: 'xl' }}>Votre panier est vide</Text>
                     <Button
                         as={Link}
                         to="/products"
-                        colorScheme="brand"
-                        size="lg"
+                        colorScheme="blue"
+                        size={{ base: 'md', md: 'lg' }}
                     >
-                        Continue Shopping
+                        Continuer vos achats
                     </Button>
                 </VStack>
-            </Container>
-        );
-    }
-
-    return (
-        <Container maxW="7xl" py={8}>
-            <VStack spacing={8} align="stretch">
-                <Heading size="xl" textAlign="center">Panier d'achat</Heading>
-                
-                <Box
-                    bg={bgColor}
-                    borderWidth="1px"
-                    borderColor={borderColor}
-                    borderRadius="lg"
-                    overflow="hidden"
-                    shadow="lg"
+            ) : (
+                <Stack
+                    direction={{ base: 'column', lg: 'row' }}
+                    spacing={{ base: 8, lg: 12 }}
+                    align={{ lg: 'flex-start' }}
                 >
-                    <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <Th>Product</Th>
-                                <Th>Price</Th>
-                                <Th>Quantity</Th>
-                                <Th>Total</Th>
-                                <Th></Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {items.map((item) => (
-                                <Tr key={item.product.id}>
-                                    <Td>
-                                        <HStack spacing={4}>
-                                            <Image
-                                                src={item.product.image || 'https://via.placeholder.com/100'}
-                                                alt={item.product.name}
-                                                boxSize="100px"
-                                                objectFit="cover"
-                                                borderRadius="md"
-                                            />
-                                            <VStack align="start" spacing={1}>
-                                                <Text fontWeight="bold">{item.product.name}</Text>
-                                                <Text color="gray.500" fontSize="sm">
-                                                    {item.product.description}
-                                                </Text>
-                                            </VStack>
-                                        </HStack>
-                                    </Td>
-                                    <Td>
-                                        {item.product.price.toLocaleString('fr-FR', {
-                                            style: 'currency',
-                                            currency: 'XOF',
-                                        })}
-                                    </Td>
-                                    <Td>
-                                        <HStack spacing={2}>
-                                            <IconButton
-                                                aria-label="Decrease quantity"
-                                                icon={<FaMinus />}
-                                                size="sm"
-                                                onClick={() => updateQuantity(item.product.id, Math.max(0, item.quantity - 1))}
-                                                isDisabled={item.quantity === 1}
-                                            />
-                                            <Text fontWeight="medium">{item.quantity}</Text>
-                                            <IconButton
-                                                aria-label="Increase quantity"
-                                                icon={<FaPlus />}
-                                                size="sm"
-                                                onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                                            />
-                                        </HStack>
-                                    </Td>
-                                    <Td fontWeight="bold">
-                                        {(item.product.price * item.quantity).toLocaleString('fr-FR', {
-                                            style: 'currency',
-                                            currency: 'XOF',
-                                        })}
-                                    </Td>
-                                    <Td>
-                                        <IconButton
-                                            aria-label="Remove item"
-                                            icon={<FaTrash />}
-                                            colorScheme="red"
-                                            variant="ghost"
-                                            onClick={() => removeItem(item.product.id)}
+                    <VStack flex="2" spacing={6} align="stretch">
+                        {cart.map((item) => (
+                            <Box
+                                key={item.id}
+                                borderWidth="1px"
+                                borderRadius="lg"
+                                p={{ base: 4, md: 6 }}
+                                bg={useColorModeValue('white', 'gray.800')}
+                            >
+                                <Stack
+                                    direction={{ base: 'column', sm: 'row' }}
+                                    spacing={{ base: 4, sm: 6 }}
+                                    align={{ sm: 'center' }}
+                                >
+                                    <Box
+                                        width={{ base: '100%', sm: '120px' }}
+                                        height={{ base: '200px', sm: '120px' }}
+                                        position="relative"
+                                    >
+                                        <Image
+                                            src={item.image}
+                                            alt={item.name}
+                                            objectFit="cover"
+                                            width="100%"
+                                            height="100%"
+                                            borderRadius="md"
                                         />
-                                    </Td>
-                                </Tr>
-                            ))}
-                        </Tbody>
-                    </Table>
-                </Box>
+                                    </Box>
 
-                <Box
-                    bg={bgColor}
-                    p={6}
-                    borderWidth="1px"
-                    borderColor={borderColor}
-                    borderRadius="lg"
-                    shadow="lg"
-                >
-                    <VStack spacing={4} align="stretch">
-                        <HStack justify="space-between">
-                            <Text fontSize="lg">Total:</Text>
-                            <Text fontSize="lg" fontWeight="bold">
-                                {total.toLocaleString('fr-FR', {
-                                    style: 'currency',
-                                    currency: 'XOF',
-                                })}
-                            </Text>
-                        </HStack>
-                        <KKiapayCheckout
-                            amount={total.toString()}
-                            key="YOUR_PUBLIC_API_KEY"
-                            callback={handlePaymentCallback}
-                        >
-                            Proceed to Checkout
-                        </KKiapayCheckout>
+                                    <Stack
+                                        flex="1"
+                                        spacing={4}
+                                        direction={{ base: 'column', sm: 'row' }}
+                                        justify="space-between"
+                                        align={{ base: 'stretch', sm: 'center' }}
+                                    >
+                                        <Box flex="1">
+                                            <Text
+                                                fontSize={{ base: 'md', md: 'lg' }}
+                                                fontWeight="semibold"
+                                            >
+                                                {item.name}
+                                            </Text>
+                                            <Text
+                                                fontSize={{ base: 'md', md: 'lg' }}
+                                                color="blue.600"
+                                                fontWeight="semibold"
+                                            >
+                                                {item.price.toLocaleString('fr-FR', {
+                                                    style: 'currency',
+                                                    currency: 'XOF',
+                                                })}
+                                            </Text>
+                                        </Box>
+
+                                        <Stack
+                                            direction={{ base: 'row', sm: 'column' }}
+                                            spacing={4}
+                                            align={{ base: 'center', sm: 'flex-end' }}
+                                        >
+                                            <HStack>
+                                                <IconButton
+                                                    aria-label="Decrease quantity"
+                                                    icon={<MinusIcon />}
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        handleQuantityChange(
+                                                            item.id,
+                                                            item.quantity - 1
+                                                        )
+                                                    }
+                                                    isDisabled={item.quantity <= 1}
+                                                />
+                                                <Text
+                                                    fontSize={{ base: 'md', md: 'lg' }}
+                                                    fontWeight="semibold"
+                                                    minW="40px"
+                                                    textAlign="center"
+                                                >
+                                                    {item.quantity}
+                                                </Text>
+                                                <IconButton
+                                                    aria-label="Increase quantity"
+                                                    icon={<AddIcon />}
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        handleQuantityChange(
+                                                            item.id,
+                                                            item.quantity + 1
+                                                        )
+                                                    }
+                                                />
+                                            </HStack>
+                                            <IconButton
+                                                aria-label="Remove item"
+                                                icon={<DeleteIcon />}
+                                                size="sm"
+                                                colorScheme="red"
+                                                variant="ghost"
+                                                onClick={() => removeFromCart(item.id)}
+                                            />
+                                        </Stack>
+                                    </Stack>
+                                </Stack>
+                            </Box>
+                        ))}
                     </VStack>
-                </Box>
-            </VStack>
+
+                    <Box
+                        flex="1"
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        p={6}
+                        position="sticky"
+                        top="24px"
+                        bg={useColorModeValue('white', 'gray.800')}
+                    >
+                        <VStack spacing={4} align="stretch">
+                            <Heading size="md">Résumé de la commande</Heading>
+                            <Flex justify="space-between">
+                                <Text fontSize={{ base: 'md', md: 'lg' }}>Total</Text>
+                                <Text
+                                    fontSize={{ base: 'md', md: 'lg' }}
+                                    fontWeight="bold"
+                                    color="blue.600"
+                                >
+                                    {total.toLocaleString('fr-FR', {
+                                        style: 'currency',
+                                        currency: 'XOF',
+                                    })}
+                                </Text>
+                            </Flex>
+                            <Button
+                                colorScheme="blue"
+                                size="lg"
+                                onClick={() => setIsPaymentOpen(true)}
+                            >
+                                Payer maintenant
+                            </Button>
+                        </VStack>
+                    </Box>
+                </Stack>
+            )}
+
+            <KKiapayCheckout
+                amount={total}
+                key={total}
+                isOpen={isPaymentOpen}
+                onClose={() => setIsPaymentOpen(false)}
+            />
         </Container>
     );
 };

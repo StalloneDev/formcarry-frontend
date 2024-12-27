@@ -76,18 +76,18 @@ const Feature = ({ text, icon, iconBg }: { text: string; icon: React.ReactElemen
 
 export const Home = () => {
     return (
-        <Container maxW={'7xl'}>
+        <Container maxW={'7xl'} px={{ base: 4, md: 8 }}>
             <Stack
                 align={'center'}
                 spacing={{ base: 8, md: 10 }}
-                py={{ base: 20, md: 28 }}
+                py={{ base: 10, md: 28 }}
                 direction={{ base: 'column', md: 'row' }}
             >
                 <Stack flex={1} spacing={{ base: 5, md: 10 }}>
                     <Heading
                         lineHeight={1.1}
                         fontWeight={600}
-                        fontSize={{ base: '3xl', sm: '4xl', lg: '6xl' }}
+                        fontSize={{ base: '2xl', sm: '4xl', lg: '6xl' }}
                     >
                         <Text
                             as={'span'}
@@ -99,26 +99,22 @@ export const Home = () => {
                                 position: 'absolute',
                                 bottom: 1,
                                 left: 0,
-                                bg: 'brand.400',
+                                bg: 'blue.400',
                                 zIndex: -1,
                             }}
                         >
                             Achetez en ligne,
                         </Text>
                         <br />
-                        <Text as={'span'} color={'brand.400'}>
-                            en toute simplicité !
+                        <Text as={'span'} color={'blue.400'}>
+                            Payez avec KKiapay!
                         </Text>
                     </Heading>
-                    <Text color={'gray.500'}>
-                        Découvrez notre marketplace où vous pouvez acheter et vendre des produits
-                        en toute sécurité. Profitez de notre système de paiement sécurisé et de
-                        notre service client disponible 24/7.
+                    <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }}>
+                        Découvrez notre marketplace en ligne avec une large sélection de produits.
+                        Profitez d'une expérience d'achat simple et sécurisée avec KKiapay.
                     </Text>
-                    <Stack
-                        spacing={{ base: 4, sm: 6 }}
-                        direction={{ base: 'column', sm: 'row' }}
-                    >
+                    <Stack spacing={{ base: 4, sm: 6 }} direction={{ base: 'column', sm: 'row' }}>
                         <Button
                             as={Link}
                             to="/products"
@@ -126,22 +122,11 @@ export const Home = () => {
                             size={'lg'}
                             fontWeight={'normal'}
                             px={6}
-                            colorScheme={'brand'}
-                            bg={'brand.400'}
-                            _hover={{ bg: 'brand.500' }}
+                            colorScheme={'blue'}
+                            bg={'blue.400'}
+                            _hover={{ bg: 'blue.500' }}
                         >
                             Commencer vos achats
-                        </Button>
-                        <Button
-                            as={Link}
-                            to="/vendor/register"
-                            rounded={'full'}
-                            size={'lg'}
-                            fontWeight={'normal'}
-                            px={6}
-                            leftIcon={<PlayIcon h={4} w={4} color={'gray.300'} />}
-                        >
-                            Devenir vendeur
                         </Button>
                     </Stack>
                 </Stack>
@@ -154,86 +139,49 @@ export const Home = () => {
                 >
                     <Box
                         position={'relative'}
-                        height={'400px'}
+                        height={{ base: '200px', md: '300px', lg: '400px' }}
                         rounded={'2xl'}
                         boxShadow={'2xl'}
                         width={'full'}
                         overflow={'hidden'}
-                        bg={'gray.100'}
                     >
-                        <video
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                            }}
-                        >
-                            <source src="/videos/ecommerce2.mp4" type="video/mp4" />
-                            Votre navigateur ne supporte pas la lecture de vidéos.
-                        </video>
+                        <Image
+                            alt={'Hero Image'}
+                            fit={'cover'}
+                            align={'center'}
+                            w={'100%'}
+                            h={'100%'}
+                            src={
+                                'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?q=80&w=2070'
+                            }
+                        />
                     </Box>
                 </Flex>
             </Stack>
 
-            <Box py={20}>
-                <Heading
-                    textAlign={'center'}
-                    fontSize={'4xl'}
-                    py={10}
-                    fontWeight={'bold'}
-                >
-                    Pourquoi nous choisir ?
-                </Heading>
-                <SimpleGrid
-                    columns={{ base: 1, md: 2, lg: 4 }}
-                    spacing={10}
-                    px={{ base: 4, md: 8 }}
-                >
+            <Box py={{ base: 10, md: 20 }}>
+                <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={{ base: 6, lg: 8 }}>
                     <Feature
-                        icon={<Icon as={FiShoppingBag} color={'white'} w={8} h={8} />}
-                        iconBg={'brand.400'}
+                        icon={<Icon as={FiShoppingBag} color={'white'} w={10} h={10} />}
+                        iconBg={'blue.400'}
                         text={'Large sélection de produits'}
                     />
                     <Feature
-                        icon={<Icon as={FiTruck} color={'white'} w={8} h={8} />}
+                        icon={<Icon as={FiTruck} color={'white'} w={10} h={10} />}
                         iconBg={'green.400'}
                         text={'Livraison rapide et fiable'}
                     />
                     <Feature
-                        icon={<Icon as={FiCreditCard} color={'white'} w={8} h={8} />}
+                        icon={<Icon as={FiCreditCard} color={'white'} w={10} h={10} />}
                         iconBg={'purple.400'}
                         text={'Paiement sécurisé via KKiapay'}
                     />
                     <Feature
-                        icon={<Icon as={FiShield} color={'white'} w={8} h={8} />}
+                        icon={<Icon as={FiShield} color={'white'} w={10} h={10} />}
                         iconBg={'red.400'}
-                        text={'Protection des acheteurs'}
+                        text={'Garantie satisfaction'}
                     />
                 </SimpleGrid>
-            </Box>
-
-            <Box py={20} bg={useColorModeValue('gray.50', 'gray.900')} rounded={'xl'}>
-                <VStack spacing={2} textAlign={'center'}>
-                    <Heading fontSize={'3xl'}>Prêt à commencer ?</Heading>
-                    <Text fontSize={'lg'} color={'gray.500'}>
-                        Rejoignez notre marketplace dès aujourd'hui !
-                    </Text>
-                    <Button
-                        as={Link}
-                        to="/products"
-                        rounded={'full'}
-                        px={6}
-                        colorScheme={'brand'}
-                        bg={'brand.400'}
-                        _hover={{ bg: 'brand.500' }}
-                    >
-                        Explorer les produits
-                    </Button>
-                </VStack>
             </Box>
         </Container>
     );
